@@ -1,4 +1,4 @@
-import { Parallel } from "./parallel";
+import { Parallel } from "./Parallel";
 
 describe("parallel", () => {
   it("is a class", () => {
