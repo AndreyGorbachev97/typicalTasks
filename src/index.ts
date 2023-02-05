@@ -1,4 +1,4 @@
-import { Parallel } from "./Parallel";
+import { Parallel } from "./parallel";
 
 (async () => {
   const jobs = [

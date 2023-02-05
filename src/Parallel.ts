@@ -23,7 +23,7 @@ export class Parallel implements IParallel {
 
   public runFn(fn: any, resolve: (arg: any) => void, args: Array<any>) {
     console.log("FN", fn);
-    fn()?.then((result: any) => {
+    Promise.resolve(fn()).then((result: any) => {
       // результат функции пушим в результирующий массив, увеличиваем счетчик
       this.results.push(result);
       this.count++;
@@ -39,7 +39,7 @@ export class Parallel implements IParallel {
       if (this.freeCountStream < this.countStream) {
         const extractedFn = this.waitFunctions.splice(0, 1);
         // запускаем раннер функции, которая была первая в очереди
-        extractedFn[0] && this.runFn(extractedFn[0], resolve, args);
+        if (extractedFn[0]) this.runFn(extractedFn[0], resolve, args);
         // заняли поток
         this.freeCountStream--;
       }
@@ -60,25 +60,11 @@ export class Parallel implements IParallel {
           }
         });
 
-        resFn.then((fn) => {
+        resFn.then((cb) => {
           // если были свободные потоки, запускаем раннер функции, дополнительно передаем главный resolve и args
-          this.runFn(fn, resolve, args);
+          this.runFn(cb, resolve, args);
         });
       });
     });
   }
 }
-
-// const runner = new Parallel(2);
-
-// (async () => {
-//   console.log(
-//     await runner.jobs(
-//       () => new Promise((resolve) => setTimeout(resolve, 10, 1)),
-//       () => new Promise((resolve) => setTimeout(resolve, 50, 2)),
-//       () => new Promise((resolve) => setTimeout(resolve, 20, 3)),
-//       () => new Promise((resolve) => setTimeout(resolve, 90, 4)),
-//       () => new Promise((resolve) => setTimeout(resolve, 30, 5))
-//     )
-//   ); // [1, 3, 2, 5, 4];
-// })();
