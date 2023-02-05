@@ -22,7 +22,6 @@ export class Parallel implements IParallel {
   }
 
   public runFn(fn: any, resolve: (arg: any) => void, args: Array<any>) {
-    console.log("FN", fn);
     Promise.resolve(fn()).then((result: any) => {
       // результат функции пушим в результирующий массив, увеличиваем счетчик
       this.results.push(result);
